@@ -1,0 +1,46 @@
+version: '3'
+
+services:
+  app:
+    image: node:18-alpine
+    ports:
+      - 127.0.0.1:3000:3000
+    working_dir: /app
+    volumes:
+      - ./:/app
+      - ./db:/app/db 
+    command: ["node", "index.js","mysqld_safe"]
+    environment:
+      MYSQL_HOST: "mysql"
+      MYSQL_USER: "app_user"
+      MYSQL_PASSWORD: "app_password"
+      MYSQL_DB: "lojaderoupa"
+    depends_on:
+      - mysql
+    networks:
+      - dockernet
+    
+    
+
+  mysql:
+    volumes:
+      - db-data:/var/lib/mysql
+    image: "mysql:8.0"
+    environment:
+      MYSQL_ROOT_PASSWORD: "123456"
+      MYSQL_DATABASE: "lojaderoupa"
+      MYSQL_USER: "root"
+      MYSQL_PASSWORD: "app_password"
+    networks:
+      - dockernet
+    working_dir: /var/lib/mysql
+  
+
+volumes:
+  db-data:
+
+
+networks:
+  dockernet:
+    name: dockernet
+    driver: bridge
